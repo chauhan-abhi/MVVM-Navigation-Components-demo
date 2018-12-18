@@ -10,6 +10,8 @@ class WeatherNetworkDataSourceImpl(
     private val weatherApiService: WeatherApiService
 ) : WeatherNetworkDataSource {
     private val _downloadedCurrentWeather = MutableLiveData<CurrentWeatherResponse>()
+    // This LiveData is only updated when a new currentWeather is fetched from the network
+    // from API. So this change can be observed in ForecastRepositoryImpl
     override val downloadedCurrentWeather: LiveData<CurrentWeatherResponse>
         get() = _downloadedCurrentWeather
     // simply return _downloadedCurrentWeather which will be casted to LiveData
