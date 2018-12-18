@@ -1,4 +1,4 @@
-package com.example.forecastmvvm.data
+package com.example.forecastmvvm.data.network
 
 import com.example.forecastmvvm.data.network.response.CurrentWeatherResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -22,7 +22,9 @@ interface WeatherApiService {
     ): Deferred<CurrentWeatherResponse>
     // Deferred = part of coroutines , we can await the call to getCurrentWeather()
     companion object {
-        operator fun invoke(): WeatherApiService {
+        operator fun invoke(
+            connectivityInterceptor: ConnectivityInterceptor
+        ): WeatherApiService {
             // add this requestInterceptor to an OKHttp client
             val requestInterceptor = Interceptor {chain ->
                 // adding API_KEY by intercepting every request
@@ -40,6 +42,7 @@ interface WeatherApiService {
             }
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(requestInterceptor)
+                .addInterceptor(connectivityInterceptor) // direct instantiation creates tight coupling
                 .build()
             return Retrofit.Builder()
                 .client(okHttpClient)

@@ -6,9 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 
 import com.example.forecastmvvm.R
-import com.example.forecastmvvm.data.WeatherApiService
+import com.example.forecastmvvm.data.network.ConnectivityInterceptor
+import com.example.forecastmvvm.data.network.ConnectivityInterceptorImpl
+import com.example.forecastmvvm.data.network.WeatherApiService
+import com.example.forecastmvvm.data.network.WeatherNetworkDataSourceImpl
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -32,12 +36,16 @@ class CurrentWeatherFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(CurrentWeatherViewModel::class.java)
-        // TODO: Use the ViewModel
-        val apiService = WeatherApiService()
+
+        val apiService = WeatherApiService(ConnectivityInterceptorImpl(this.context!!))
+        val weatherNetworkDataSource = WeatherNetworkDataSourceImpl(apiService) // later use DI here
+
+        weatherNetworkDataSource.downloadedCurrentWeather.observe(this, Observer {
+            textView.text = it.toString()
+        })
         // want to update UI so Main
         GlobalScope.launch(Dispatchers.Main) {
-            val currentWeatherResponse = apiService.getCurrentWeather("noida").await()
-            textView.text = currentWeatherResponse.toString()
+            weatherNetworkDataSource.fetchCurrentWeather("Noida", "en")
         }
     }
 

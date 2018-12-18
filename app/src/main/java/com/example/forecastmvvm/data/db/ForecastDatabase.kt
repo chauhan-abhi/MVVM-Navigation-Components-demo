@@ -29,8 +29,9 @@ abstract class ForecastDatabase : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context) =
-                Room.databaseBuilder(context.applicationContext,
-                    ForecastDatabase::class.java, "forecast.db")
+                Room.databaseBuilder(context.applicationContext, // Application context
+                    ForecastDatabase::class.java,                // Database class
+                    "forecast.db")                         // Database name
                     .build()
     }
 
