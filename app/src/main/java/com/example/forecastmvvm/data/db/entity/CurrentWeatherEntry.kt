@@ -1,9 +1,19 @@
 package com.example.forecastmvvm.data.db.entity
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+// Since we can have only one instance of this database
+const val CURRENT_WEATHER_ID = 0
+
+@Entity(tableName = "current_weather")
 data class CurrentWeatherEntry(
     val uv: Int,
+    // Room or Sqlite cannot store non primitive data types
+    // Use embedded annotation with a prefix to each of the fields
+    @Embedded(prefix = "condition_")
     val condition: Condition,
     @SerializedName("feelslike_c")
     val feelslikeC: Double,
@@ -29,4 +39,7 @@ data class CurrentWeatherEntry(
     val windKph: Double,
     @SerializedName("wind_mph")
     val windMph: Double
-)
+) {
+    @PrimaryKey(autoGenerate = false)
+    var id: Int = CURRENT_WEATHER_ID
+}
